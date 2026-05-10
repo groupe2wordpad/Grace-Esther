@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma Lettre Anonyme — Influencons</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FDF8F2;
+      --ink: #1E1010;
+      --purple: #4B2D72;
+      --purple-light: #7B5BAB;
+      --gold: #C4913A;
+      --gold-light: #E2C37A;
+      --gold-pale: rgba(196,145,58,0.10);
+      --paper: #FFFCF6;
+      --border: rgba(75,45,114,0.15);
+      --muted: #7A6570;
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem 4rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 10% 5%, rgba(75,45,114,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 90% 90%, rgba(196,145,58,0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Particles */
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: drift linear infinite;
+    }
+    @keyframes drift {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      5%   { opacity: 0.3; }
+      95%  { opacity: 0.08; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* Logo */
+    .logo-wrap { position: relative; z-index: 1; margin-bottom: 3rem; text-align: center; }
+    .logo-img { height: 110px; width: auto; filter: drop-shadow(0 4px 12px rgba(75,45,114,0.15)); }
+
+    /* Header */
+    .header {
+      position: relative; z-index: 1;
+      text-align: center; max-width: 620px; margin-bottom: 2.5rem;
+      animation: fadeSlide 0.8s ease both;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .challenge-badge {
+      display: inline-block;
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(196,145,58,0.3);
+      border-radius: 100px; padding: 0.3rem 1rem; margin-bottom: 1.4rem;
+      font-style: italic;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5.5vw, 3.4rem);
+      font-weight: 400; line-height: 1.18;
+      color: var(--purple); margin-bottom: 1.4rem;
+    }
+    h1 em { font-style: italic; color: var(--gold); }
+    .subtitle {
+      font-size: 1rem; line-height: 1.85;
+      color: var(--muted); max-width: 480px; margin: 0 auto;
+    }
+
+    /* Ornament */
+    .ornament {
+      position: relative; z-index: 1;
+      text-align: center; color: var(--gold-light);
+      font-size: 1rem; letter-spacing: 0.7em;
+      margin: 2rem 0; opacity: 0.8;
+    }
+
+    /* Card */
+    .card {
+      position: relative; z-index: 1;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 2.8rem;
+      width: 100%; max-width: 700px;
+      box-shadow: 0 24px 64px rgba(75,45,114,0.07), 0 4px 16px rgba(196,145,58,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+      animation: fadeSlide 0.8s 0.2s ease both;
+    }
+
+    .card-top {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.6rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .card-label {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-size: 1.05rem; color: var(--muted);
+    }
+
+    /* Voice button */
+    .voice-btn {
+      display: flex; align-items: center; gap: 0.55rem;
+      background: none; border: 1px solid rgba(196,145,58,0.3);
+      border-radius: 100px; padding: 0.45rem 1.1rem;
+      font-family: 'Lora', serif; font-size: 0.8rem;
+      font-style: italic; color: var(--gold); cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .voice-btn:hover { background: var(--gold-pale); border-color: var(--gold); }
+    .voice-btn.on {
+      background: var(--gold-pale); border-color: var(--gold);
+      animation: ripple 1.8s ease infinite;
+    }
+    @keyframes ripple {
+      0%,100% { box-shadow: 0 0 0 0 rgba(196,145,58,0.25); }
+      50%      { box-shadow: 0 0 0 5px rgba(196,145,58,0.05); }
+    }
+    .voice-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+    .voice-btn.on .voice-dot { animation: blink 1s ease infinite; }
+    @keyframes blink {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.6); opacity: 0.4; }
+    }
+
+    /* Textarea */
+    textarea {
+      width: 100%; min-height: 270px;
+      font-family: 'Lora', serif; font-size: 1.05rem;
+      line-height: 1.95; color: var(--ink);
+      background: transparent; border: none; outline: none;
+      resize: vertical;
+      border-bottom: 1px solid rgba(75,45,114,0.12);
+      padding-bottom: 1rem; transition: border-color 0.3s;
+    }
+    textarea:focus { border-bottom-color: var(--purple-light); }
+    textarea::placeholder { color: rgba(122,101,112,0.45); font-style: italic; line-height: 1.9; }
+
+    .word-count { font-size: 0.75rem; color: rgba(122,101,112,0.45); font-style: italic; margin-top: 0.9rem; text-align: right; }
+
+    /* Send button */
+    .send-btn {
+      width: 100%; margin-top: 2rem;
+      padding: 1.05rem 2rem;
+      background: linear-gradient(140deg, #4B2D72 0%, #7B5BAB 100%);
+      border: none; border-radius: 100px;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-style: italic;
+      color: #FDF8F2; cursor: pointer;
+      letter-spacing: 0.02em; transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+    }
+    .send-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(140deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+      border-radius: inherit;
+    }
+    .send-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(75,45,114,0.35);
+    }
+    .send-btn:active:not(:disabled) { transform: translateY(0); }
+    .send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .spin {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(253,248,242,0.35);
+      border-top-color: #FDF8F2; border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      vertical-align: middle; margin-right: 0.5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .anon-note {
+      margin-top: 1.1rem; font-size: 0.78rem;
+      color: rgba(122,101,112,0.6); font-style: italic;
+      text-align: center; line-height: 1.6;
+    }
+
+    /* Response overlay */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(20, 8, 30, 0.62);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 1.5rem;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .overlay.show { opacity: 1; visibility: visible; }
+    .response-box {
+      background: var(--paper); border-radius: 22px;
+      padding: 3rem 2.5rem; max-width: 520px; width: 100%;
+      text-align: center;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+      border: 1px solid var(--border);
+      max-height: 88vh; overflow-y: auto;
+      box-shadow: 0 40px 80px rgba(20,8,30,0.22);
+    }
+    .overlay.show .response-box { transform: translateY(0) scale(1); }
+
+    .resp-flame { font-size: 2.8rem; margin-bottom: 1.2rem; display: block; }
+    .resp-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-style: italic;
+      color: var(--purple); margin-bottom: 1.5rem; line-height: 1.3;
+    }
+    .resp-divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--purple-light));
+      border-radius: 2px; margin: 0 auto 1.5rem;
+    }
+    .resp-msg {
+      font-size: 1rem; line-height: 1.9;
+      color: var(--muted); margin-bottom: 2rem;
+    }
+    .resp-verse {
+      font-family: 'Playfair Display', serif;
+      font-style: italic; font-size: 0.95rem;
+      color: var(--purple-light);
+      border-left: 3px solid var(--gold);
+      padding: 0.5rem 0 0.5rem 1.2rem;
+      text-align: left; margin-bottom: 0.5rem;
+      line-height: 1.7;
+    }
+    .resp-ref {
+      font-size: 0.82rem; color: var(--gold);
+      font-style: italic; text-align: left;
+      padding-left: 1.2rem; display: block; margin-bottom: 2rem;
+    }
+    .resp-close {
+      background: none;
+      border: 1.5px solid var(--purple);
+      border-radius: 100px; padding: 0.65rem 2.2rem;
+      font-family: 'Lora', serif; font-size: 0.9rem;
+      font-style: italic; color: var(--purple); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .resp-close:hover { background: var(--purple); color: var(--paper); }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 1;
+      margin-top: 4rem; text-align: center;
+      font-size: 0.78rem; color: rgba(122,101,112,0.45);
+      font-style: italic; line-height: 2;
+    }
+
+    @media (max-width: 580px) {
+      body { padding: 2rem 1rem 3rem; }
+      .card { padding: 1.8rem 1.5rem; }
+      .response-box { padding: 2.2rem 1.5rem; }
+      h1 { font-size: 2rem; }
+      .logo-img { height: 85px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="particles" id="particles"></div>
+
+
+
+  <!-- En-tête -->
+  <div class="header">
+    <div class="challenge-badge">✦ Challenge · Ma Lettre Anonyme</div>
+    <h1>Ce que tu n'as jamais<br>osé <em>dire</em></h1>
+    <p class="subtitle">
+      Un espace sincère, sans jugement.<br>
+      Écris ou parle librement — tes mots resteront anonymes.
+    </p>
+  </div>
+
+  <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  <!-- Zone d'écriture -->
+  <div class="card">
+    <div class="card-top">
+      <span class="card-label">Ta lettre…</span>
+      <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+        <span class="voice-dot"></span>
+        <span id="voiceTxt">Parler à la place</span>
+      </button>
+    </div>
+
+    <textarea
+      id="letter"
+      placeholder="Commence ici… Pas besoin de bien formuler. Juste être vrai.&#10;&#10;Tout ce que tu portes, tout ce que tu n'as jamais réussi à dire à voix haute — cet espace est à toi."
+      oninput="updateCount()"
+    ></textarea>
+
+    <div class="word-count" id="wc">0 mot</div>
+
+    <button class="send-btn" id="sendBtn" onclick="sendLetter()">
+      Envoyer ma lettre
+    </button>
+
+    <p class="anon-note">
+      🔒 Envoi anonyme · Aucun nom ni donnée personnelle collectée
+    </p>
+  </div>
+
+  <footer>
+    #influencons.com &nbsp;·&nbsp; #influençons autrement
+  </footer>
+
+  <!-- Overlay de confirmation -->
+  <div class="overlay" id="overlay">
+    <div class="response-box">
+      <span class="resp-flame">🕊️</span>
+      <div class="resp-title">Ta lettre a été reçue</div>
+      <div class="resp-divider"></div>
+      <p class="resp-msg">
+        Merci de nous avoir fait confiance avec ce que tu portes.<br>
+        Le simple fait de mettre des mots sur ce que tu ressens est déjà un acte de courage — et le premier pas vers la guérison.
+      </p>
+      <div class="resp-verse">
+        "Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos."
+      </div>
+      <span class="resp-ref">— Matthieu 11 : 28</span>
+      <br>
+      <button class="resp-close" onclick="closeOverlay()">Fermer</button>
+    </div>
+  </div>
+
+  <script>
+    /* ── Particules ── */
+    const pc = document.getElementById('particles');
+    const colors = ['#C4913A','#7B5BAB','#E2C37A'];
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const s = 2 + Math.random() * 3;
+      p.style.cssText = [
+        'width:' + s + 'px',
+        'height:' + s + 'px',
+        'left:' + (Math.random() * 100) + '%',
+        'background:' + colors[Math.floor(Math.random()*colors.length)],
+        'animation-duration:' + (10 + Math.random() * 14) + 's',
+        'animation-delay:' + (Math.random() * 18) + 's',
+        'opacity:' + (0.1 + Math.random() * 0.2)
+      ].join(';');
+      pc.appendChild(p);
+    }
+
+    /* ── Compteur ── */
+    function updateCount() {
+      const t = document.getElementById('letter').value.trim();
+      const n = t ? t.split(/\s+/).length : 0;
+      document.getElementById('wc').textContent = n + (n <= 1 ? ' mot' : ' mots');
+    }
+
+    /* ── Voix ── */
+    let rec = null, recording = false;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      rec = new SR();
+      rec.lang = 'fr-FR';
+      rec.continuous = true;
+      rec.interimResults = true;
+      let final = '';
+      rec.onresult = e => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          e.results[i].isFinal ? (final += e.results[i][0].transcript + ' ')
+                               : (interim += e.results[i][0].transcript);
+        }
+        document.getElementById('letter').value = final + interim;
+        updateCount();
+      };
+      rec.onerror = stopVoice;
+      rec.onend = () => { if (recording) rec.start(); };
+    }
+
+    function toggleVoice() {
+      if (!rec) { alert('Ton navigateur ne supporte pas la reconnaissance vocale.\nEssaie Chrome ou Edge.'); return; }
+      recording ? stopVoice() : startVoice();
+    }
+    function startVoice() {
+      recording = true; rec.start();
+      document.getElementById('voiceBtn').classList.add('on');
+      document.getElementById('voiceTxt').textContent = 'Arrêter';
+    }
+    function stopVoice() {
+      recording = false; if (rec) rec.stop();
+      document.getElementById('voiceBtn').classList.remove('on');
+      document.getElementById('voiceTxt').textContent = 'Parler à la place';
+    }
+
+    /* ── Envoi ── */
+    function sendLetter() {
+      const txt = document.getElementById('letter').value.trim();
+      if (!txt) { document.getElementById('letter').focus(); return; }
+      if (recording) stopVoice();
+
+      const btn = document.getElementById('sendBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin"></span>Envoi en cours…';
+
+      const mailto = 'mailto:graceevelyne59@gmail.com?subject=Ma%20lettre%20anonyme&body=' + encodeURIComponent(txt);
+      window.location.href = mailto;
+
+      setTimeout(() => {
+        document.getElementById('overlay').classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = 'Envoyer ma lettre';
+      }, 800);
+    }
+
+    function closeOverlay() {
+      document.getElementById('overlay').classList.remove('show');
+      document.getElementById('letter').value = '';
+      updateCount();
+    }
+  </script>
+</body>
+</html>
