@@ -236,8 +236,8 @@
     /* Burn overlay */
     .burn-overlay {
       position: fixed; inset: 0;
-      background: rgba(10, 2, 0, 0.88);
-      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      background: rgba(6, 2, 0, 0.92);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
       display: flex; align-items: center; justify-content: center;
       z-index: 300; padding: 1.5rem;
       opacity: 0; visibility: hidden;
@@ -245,52 +245,43 @@
     }
     .burn-overlay.show { opacity: 1; visibility: visible; }
     .burn-box {
-      text-align: center; max-width: 420px; width: 100%;
+      text-align: center; max-width: 440px; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
     }
-    .burn-canvas-wrap {
-      position: relative; height: 180px; margin-bottom: 1.5rem;
-      display: flex; align-items: center; justify-content: center;
+
+    /* Message burn */
+    .burn-after {
+      opacity: 0; transition: opacity 1.2s ease;
+      text-align: center;
     }
-    #burnCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .burn-text-dissolve {
-      font-family: 'Lora', serif; font-size: 0.9rem;
-      font-style: italic; color: rgba(255,200,120,0.85);
-      line-height: 1.7; padding: 0 1rem;
-      transition: opacity 2s ease; position: relative; z-index: 2;
-      max-height: 120px; overflow: hidden;
+    .burn-after.visible { opacity: 1; }
+    .burn-ember {
+      font-size: 2.2rem; margin-bottom: 1rem; display: block;
+      animation: emberFloat 3s ease-in-out infinite;
+    }
+    @keyframes emberFloat {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
     }
     .burn-msg {
       font-family: 'Playfair Display', serif;
-      font-size: 1.35rem; font-style: italic;
-      color: #ffd4a8; line-height: 1.4; margin-bottom: 0.8rem;
-      opacity: 0; transition: opacity 1s ease;
+      font-size: 1.3rem; font-style: italic;
+      color: #ffd4a8; line-height: 1.5; margin-bottom: 1rem;
     }
     .burn-sub {
       font-family: 'Lora', serif; font-size: 0.92rem;
-      color: rgba(255,200,140,0.65); font-style: italic;
-      line-height: 1.7; margin-bottom: 2rem;
-      opacity: 0; transition: opacity 1s ease;
+      color: rgba(255,210,160,0.7); font-style: italic;
+      line-height: 1.85; margin-bottom: 2rem;
+      max-width: 340px;
     }
     .burn-close {
-      background: none; border: 1.5px solid rgba(255,180,80,0.5);
-      border-radius: 100px; padding: 0.65rem 2.2rem;
+      background: none; border: 1.5px solid rgba(255,180,80,0.45);
+      border-radius: 100px; padding: 0.65rem 2.4rem;
       font-family: 'Lora', serif; font-size: 0.9rem;
       font-style: italic; color: #ffd4a8; cursor: pointer;
       transition: all 0.3s ease;
-      opacity: 0; transition: opacity 1s ease;
     }
-    .burn-close:hover { background: rgba(255,140,40,0.15); border-color: #ffd4a8; }
-
-    /* Ash particles */
-    .ash {
-      position: absolute; border-radius: 50%;
-      background: rgba(120,80,40,0.6);
-      pointer-events: none; animation: ashFall linear forwards;
-    }
-    @keyframes ashFall {
-      0%   { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-      100% { transform: translateY(200px) rotate(720deg) translateX(var(--dx)); opacity: 0; }
-    }
+    .burn-close:hover { background: rgba(255,140,40,0.12); border-color: #ffd4a8; }
       display: inline-block; width: 16px; height: 16px;
       border: 2px solid rgba(253,248,242,0.35);
       border-top-color: #FDF8F2; border-radius: 50%;
@@ -456,13 +447,16 @@
   <!-- Burn overlay -->
   <div class="burn-overlay" id="burnOverlay">
     <div class="burn-box">
-      <div class="burn-canvas-wrap">
-        <canvas id="burnCanvas"></canvas>
-        <div class="burn-text-dissolve" id="burnTextDissolve"></div>
+      <div class="burn-after" id="burnAfter">
+        <span class="burn-ember">🕯️</span>
+        <div class="burn-msg">Tu as bien fait de laisser partir ces mots.</div>
+        <div class="burn-sub">
+          Ce geste de lâcher-prise demande du courage.<br>
+          Nous espérons qu'il t'apporte un peu de légèreté,<br>
+          et que cette libération soit le début<br>d'une paix que tu mérites profondément.
+        </div>
+        <button class="burn-close" onclick="closeBurn()">Continuer</button>
       </div>
-      <div class="burn-msg" id="burnMsg">Tes mots n'ont pas été gardés.</div>
-      <div class="burn-sub" id="burnSub">Mais ils ont existé.<br>Et cela compte.</div>
-      <button class="burn-close" id="burnClose" onclick="closeBurn()">Continuer</button>
     </div>
   </div>
 
@@ -561,113 +555,16 @@
     function burnLetter() {
       const txt = getLetterText();
       if (!txt) return;
-
-      // Show overlay
-      const overlay = document.getElementById('burnOverlay');
-      overlay.classList.add('show');
-
-      // Put a preview of the text in the dissolve area
-      const preview = txt.length > 180 ? txt.slice(0, 180) + '…' : txt;
-      const dissolveEl = document.getElementById('burnTextDissolve');
-      dissolveEl.textContent = preview;
-      dissolveEl.style.opacity = '1';
-
-      // Canvas fire particles
-      const canvas = document.getElementById('burnCanvas');
-      const wrap = canvas.parentElement;
-      canvas.width = wrap.offsetWidth;
-      canvas.height = wrap.offsetHeight;
-      const ctx = canvas.getContext('2d');
-
-      let particles = [];
-      let frame = 0;
-      const maxFrames = 160;
-
-      function spawnParticle() {
-        const x = canvas.width * (0.2 + Math.random() * 0.6);
-        const y = canvas.height * (0.5 + Math.random() * 0.4);
-        particles.push({
-          x, y,
-          vx: (Math.random() - 0.5) * 1.8,
-          vy: -(1.5 + Math.random() * 2.5),
-          life: 1,
-          decay: 0.012 + Math.random() * 0.018,
-          size: 3 + Math.random() * 6,
-          hue: 20 + Math.random() * 30
-        });
-      }
-
-      function animFire() {
-        frame++;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        if (frame < maxFrames) {
-          for (let i = 0; i < 4; i++) spawnParticle();
-          requestAnimationFrame(animFire);
-        }
-
-        particles = particles.filter(p => p.life > 0);
-        particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy -= 0.04;
-          p.vx += (Math.random() - 0.5) * 0.15;
-          p.life -= p.decay;
-
-          const r = Math.round(255);
-          const g = Math.round(p.hue * 3 * p.life);
-          const a = p.life;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${r},${g},30,${a})`;
-          ctx.fill();
-        });
-
-        // Dissolve text progressively
-        if (frame < maxFrames) {
-          dissolveEl.style.opacity = Math.max(0, 1 - frame / (maxFrames * 0.6));
-        }
-
-        if (frame >= maxFrames && particles.length === 0) {
-          // Show final message
-          dissolveEl.style.opacity = '0';
-          setTimeout(() => {
-            document.getElementById('burnMsg').style.opacity = '1';
-            document.getElementById('burnSub').style.opacity = '1';
-            document.getElementById('burnClose').style.opacity = '1';
-          }, 400);
-        } else if (frame >= maxFrames) {
-          // Keep draining particles
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          particles = particles.filter(p => p.life > 0);
-          particles.forEach(p => {
-            p.x += p.vx; p.y += p.vy; p.vy -= 0.04;
-            p.life -= p.decay * 2;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,${Math.round(p.hue*3*p.life)},30,${p.life})`;
-            ctx.fill();
-          });
-          requestAnimationFrame(animFire);
-        }
-      }
-      requestAnimationFrame(animFire);
-
-      // Vibrate on mobile
-      if (navigator.vibrate) navigator.vibrate([80, 40, 120, 40, 60]);
+      document.getElementById('burnOverlay').classList.add('show');
+      setTimeout(() => document.getElementById('burnAfter').classList.add('visible'), 80);
+      if (navigator.vibrate) navigator.vibrate([60, 30, 80]);
     }
 
     function closeBurn() {
-      const overlay = document.getElementById('burnOverlay');
-      overlay.classList.remove('show');
-      // Reset
-      document.getElementById('burnMsg').style.opacity = '0';
-      document.getElementById('burnSub').style.opacity = '0';
-      document.getElementById('burnClose').style.opacity = '0';
-      document.getElementById('burnTextDissolve').textContent = '';
+      document.getElementById('burnOverlay').classList.remove('show');
+      document.getElementById('burnAfter').classList.remove('visible');
       document.getElementById('letter').value = '';
       updateCount();
-      // Close share panel too
       document.getElementById('sharePanel').classList.remove('open');
     }
 
