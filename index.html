@@ -163,32 +163,134 @@
 
     .word-count { font-size: 0.75rem; color: rgba(122,101,112,0.45); font-style: italic; margin-top: 0.9rem; text-align: right; }
 
-    /* Send button */
-    .send-btn {
-      width: 100%; margin-top: 2rem;
-      padding: 1.05rem 2rem;
-      background: linear-gradient(140deg, #4B2D72 0%, #7B5BAB 100%);
-      border: none; border-radius: 100px;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem; font-style: italic;
-      color: #FDF8F2; cursor: pointer;
-      letter-spacing: 0.02em; transition: all 0.3s ease;
-      position: relative; overflow: hidden;
+    /* Choice section */
+    .choice-section { margin-top: 2rem; }
+    .choice-label {
+      text-align: center; font-family: 'Playfair Display', serif;
+      font-style: italic; font-size: 1.05rem;
+      color: var(--muted); margin-bottom: 1.4rem; display: block;
     }
-    .send-btn::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(140deg, rgba(255,255,255,0.12) 0%, transparent 60%);
-      border-radius: inherit;
+    .choice-btns {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
     }
-    .send-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(75,45,114,0.35);
-    }
-    .send-btn:active:not(:disabled) { transform: translateY(0); }
-    .send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    @media (max-width: 460px) { .choice-btns { grid-template-columns: 1fr; } }
 
-    .spin {
+    .choice-btn {
+      border: none; border-radius: 16px; padding: 1.1rem 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-style: italic;
+      cursor: pointer; transition: all 0.3s ease;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.45rem; line-height: 1.4;
+    }
+    .choice-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .choice-btn .btn-emoji { font-size: 1.8rem; font-style: normal; }
+    .choice-btn .btn-sub {
+      font-size: 0.72rem; letter-spacing: 0.06em;
+      font-family: 'Lora', serif; opacity: 0.75;
+    }
+
+    .btn-burn {
+      background: linear-gradient(140deg, #2a0a00 0%, #7a2800 100%);
+      color: #ffd4a8;
+      box-shadow: 0 6px 24px rgba(122,40,0,0.25);
+    }
+    .btn-burn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(200,70,0,0.35);
+    }
+    .btn-share {
+      background: linear-gradient(140deg, #4B2D72 0%, #7B5BAB 100%);
+      color: #FDF8F2;
+      box-shadow: 0 6px 24px rgba(75,45,114,0.25);
+    }
+    .btn-share:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(75,45,114,0.35);
+    }
+
+    /* Share panel */
+    .share-panel {
+      margin-top: 1.2rem; padding: 1.2rem 1.5rem;
+      background: rgba(75,45,114,0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: none; gap: 0.75rem;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .share-panel.open { display: flex; }
+    .share-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.5rem 1.1rem; border-radius: 100px;
+      font-family: 'Lora', serif; font-size: 0.82rem;
+      font-style: italic; cursor: pointer; text-decoration: none;
+      border: 1px solid var(--border); color: var(--ink);
+      background: var(--paper); transition: all 0.2s;
+    }
+    .share-link:hover { border-color: var(--purple-light); color: var(--purple); background: rgba(75,45,114,0.05); }
+
+    /* Send button (kept for compat but hidden) */
+    .send-btn { display: none; }
+
+    /* Burn overlay */
+    .burn-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10, 2, 0, 0.88);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; padding: 1.5rem;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .burn-overlay.show { opacity: 1; visibility: visible; }
+    .burn-box {
+      text-align: center; max-width: 420px; width: 100%;
+    }
+    .burn-canvas-wrap {
+      position: relative; height: 180px; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #burnCanvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .burn-text-dissolve {
+      font-family: 'Lora', serif; font-size: 0.9rem;
+      font-style: italic; color: rgba(255,200,120,0.85);
+      line-height: 1.7; padding: 0 1rem;
+      transition: opacity 2s ease; position: relative; z-index: 2;
+      max-height: 120px; overflow: hidden;
+    }
+    .burn-msg {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem; font-style: italic;
+      color: #ffd4a8; line-height: 1.4; margin-bottom: 0.8rem;
+      opacity: 0; transition: opacity 1s ease;
+    }
+    .burn-sub {
+      font-family: 'Lora', serif; font-size: 0.92rem;
+      color: rgba(255,200,140,0.65); font-style: italic;
+      line-height: 1.7; margin-bottom: 2rem;
+      opacity: 0; transition: opacity 1s ease;
+    }
+    .burn-close {
+      background: none; border: 1.5px solid rgba(255,180,80,0.5);
+      border-radius: 100px; padding: 0.65rem 2.2rem;
+      font-family: 'Lora', serif; font-size: 0.9rem;
+      font-style: italic; color: #ffd4a8; cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0; transition: opacity 1s ease;
+    }
+    .burn-close:hover { background: rgba(255,140,40,0.15); border-color: #ffd4a8; }
+
+    /* Ash particles */
+    .ash {
+      position: absolute; border-radius: 50%;
+      background: rgba(120,80,40,0.6);
+      pointer-events: none; animation: ashFall linear forwards;
+    }
+    @keyframes ashFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(200px) rotate(720deg) translateX(var(--dx)); opacity: 0; }
+    }
       display: inline-block; width: 16px; height: 16px;
       border: 2px solid rgba(253,248,242,0.35);
       border-top-color: #FDF8F2; border-radius: 50%;
@@ -318,20 +420,53 @@
 
     <div class="word-count" id="wc">0 mot</div>
 
-    <button class="send-btn" id="sendBtn" onclick="sendLetter()">
-      Envoyer ma lettre
-    </button>
+    <div class="choice-section">
+      <span class="choice-label">Que veux-tu faire de ces mots&nbsp;?</span>
+      <div class="choice-btns">
+        <button class="choice-btn btn-burn" id="burnBtn" onclick="burnLetter()">
+          <span class="btn-emoji">🔥</span>
+          Brûler ma lettre
+          <span class="btn-sub">elle disparaît · personne ne la verra</span>
+        </button>
+        <button class="choice-btn btn-share" id="shareBtn" onclick="toggleShare()">
+          <span class="btn-emoji">🕊️</span>
+          Partager mes mots
+          <span class="btn-sub">WhatsApp · Telegram · copier</span>
+        </button>
+      </div>
+
+      <div class="share-panel" id="sharePanel">
+        <a class="share-link" id="waLink" href="#" target="_blank">💬 WhatsApp</a>
+        <a class="share-link" id="tgLink" href="#" target="_blank">✈️ Telegram</a>
+        <a class="share-link" id="mailLink" href="#">✉️ Email</a>
+        <a class="share-link" id="copyLink" href="#" onclick="copyText(event)">📋 Copier</a>
+      </div>
+    </div>
 
     <p class="anon-note">
-      🔒 Envoi anonyme · Aucun nom ni donnée personnelle collectée
+      🔒 Espace sécurisé · Aucune donnée personnelle collectée
     </p>
+    <button class="send-btn" id="sendBtn"></button>
   </div>
 
   <footer>
     #influencons.com &nbsp;·&nbsp; #influençons autrement
   </footer>
 
-  <!-- Overlay de confirmation -->
+  <!-- Burn overlay -->
+  <div class="burn-overlay" id="burnOverlay">
+    <div class="burn-box">
+      <div class="burn-canvas-wrap">
+        <canvas id="burnCanvas"></canvas>
+        <div class="burn-text-dissolve" id="burnTextDissolve"></div>
+      </div>
+      <div class="burn-msg" id="burnMsg">Tes mots n'ont pas été gardés.</div>
+      <div class="burn-sub" id="burnSub">Mais ils ont existé.<br>Et cela compte.</div>
+      <button class="burn-close" id="burnClose" onclick="closeBurn()">Continuer</button>
+    </div>
+  </div>
+
+  <!-- Share overlay (existing) -->
   <div class="overlay" id="overlay">
     <div class="response-box">
       <span class="resp-flame">🕊️</span>
@@ -414,26 +549,153 @@
       document.getElementById('voiceTxt').textContent = 'Parler à la place';
     }
 
-    /* ── Envoi ── */
-    function sendLetter() {
+    /* ── Validation commune ── */
+    function getLetterText() {
       const txt = document.getElementById('letter').value.trim();
-      if (!txt) { document.getElementById('letter').focus(); return; }
+      if (!txt) { document.getElementById('letter').focus(); return null; }
       if (recording) stopVoice();
-
-      const btn = document.getElementById('sendBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spin"></span>Envoi en cours…';
-
-      const mailto = 'mailto:graceevelyne59@gmail.com?subject=Ma%20lettre%20anonyme&body=' + encodeURIComponent(txt);
-      window.location.href = mailto;
-
-      setTimeout(() => {
-        document.getElementById('overlay').classList.add('show');
-        btn.disabled = false;
-        btn.innerHTML = 'Envoyer ma lettre';
-      }, 800);
+      return txt;
     }
 
+    /* ── 🔥 BRÛLER ── */
+    function burnLetter() {
+      const txt = getLetterText();
+      if (!txt) return;
+
+      // Show overlay
+      const overlay = document.getElementById('burnOverlay');
+      overlay.classList.add('show');
+
+      // Put a preview of the text in the dissolve area
+      const preview = txt.length > 180 ? txt.slice(0, 180) + '…' : txt;
+      const dissolveEl = document.getElementById('burnTextDissolve');
+      dissolveEl.textContent = preview;
+      dissolveEl.style.opacity = '1';
+
+      // Canvas fire particles
+      const canvas = document.getElementById('burnCanvas');
+      const wrap = canvas.parentElement;
+      canvas.width = wrap.offsetWidth;
+      canvas.height = wrap.offsetHeight;
+      const ctx = canvas.getContext('2d');
+
+      let particles = [];
+      let frame = 0;
+      const maxFrames = 160;
+
+      function spawnParticle() {
+        const x = canvas.width * (0.2 + Math.random() * 0.6);
+        const y = canvas.height * (0.5 + Math.random() * 0.4);
+        particles.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 1.8,
+          vy: -(1.5 + Math.random() * 2.5),
+          life: 1,
+          decay: 0.012 + Math.random() * 0.018,
+          size: 3 + Math.random() * 6,
+          hue: 20 + Math.random() * 30
+        });
+      }
+
+      function animFire() {
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (frame < maxFrames) {
+          for (let i = 0; i < 4; i++) spawnParticle();
+          requestAnimationFrame(animFire);
+        }
+
+        particles = particles.filter(p => p.life > 0);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy -= 0.04;
+          p.vx += (Math.random() - 0.5) * 0.15;
+          p.life -= p.decay;
+
+          const r = Math.round(255);
+          const g = Math.round(p.hue * 3 * p.life);
+          const a = p.life;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${r},${g},30,${a})`;
+          ctx.fill();
+        });
+
+        // Dissolve text progressively
+        if (frame < maxFrames) {
+          dissolveEl.style.opacity = Math.max(0, 1 - frame / (maxFrames * 0.6));
+        }
+
+        if (frame >= maxFrames && particles.length === 0) {
+          // Show final message
+          dissolveEl.style.opacity = '0';
+          setTimeout(() => {
+            document.getElementById('burnMsg').style.opacity = '1';
+            document.getElementById('burnSub').style.opacity = '1';
+            document.getElementById('burnClose').style.opacity = '1';
+          }, 400);
+        } else if (frame >= maxFrames) {
+          // Keep draining particles
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles = particles.filter(p => p.life > 0);
+          particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.vy -= 0.04;
+            p.life -= p.decay * 2;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,${Math.round(p.hue*3*p.life)},30,${p.life})`;
+            ctx.fill();
+          });
+          requestAnimationFrame(animFire);
+        }
+      }
+      requestAnimationFrame(animFire);
+
+      // Vibrate on mobile
+      if (navigator.vibrate) navigator.vibrate([80, 40, 120, 40, 60]);
+    }
+
+    function closeBurn() {
+      const overlay = document.getElementById('burnOverlay');
+      overlay.classList.remove('show');
+      // Reset
+      document.getElementById('burnMsg').style.opacity = '0';
+      document.getElementById('burnSub').style.opacity = '0';
+      document.getElementById('burnClose').style.opacity = '0';
+      document.getElementById('burnTextDissolve').textContent = '';
+      document.getElementById('letter').value = '';
+      updateCount();
+      // Close share panel too
+      document.getElementById('sharePanel').classList.remove('open');
+    }
+
+    /* ── 🕊️ PARTAGER ── */
+    function toggleShare() {
+      const txt = getLetterText();
+      if (!txt) return;
+      const panel = document.getElementById('sharePanel');
+      const enc = encodeURIComponent(txt);
+
+      document.getElementById('waLink').href = 'https://wa.me/?text=' + enc;
+      document.getElementById('tgLink').href = 'https://t.me/share/url?url=&text=' + enc;
+      document.getElementById('mailLink').href = 'mailto:?subject=Ma%20lettre&body=' + enc;
+
+      panel.classList.toggle('open');
+    }
+
+    function copyText(e) {
+      e.preventDefault();
+      const txt = document.getElementById('letter').value.trim();
+      navigator.clipboard.writeText(txt).then(() => {
+        const link = document.getElementById('copyLink');
+        link.textContent = '✅ Copié !';
+        setTimeout(() => { link.textContent = '📋 Copier'; }, 2000);
+      });
+    }
+
+    /* ── Overlay confirmation (kept for share path) ── */
     function closeOverlay() {
       document.getElementById('overlay').classList.remove('show');
       document.getElementById('letter').value = '';
